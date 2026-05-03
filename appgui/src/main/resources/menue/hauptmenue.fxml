@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="450.0" prefWidth="700.0"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="de.pm.menue.HauptmenuController">
+
+    <children>
+
+        <!-- HEADER -->
+        <Label layoutX="20.0" layoutY="10.0"
+               fx:id="lb_user"
+               text="User">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Label>
+
+        <Button fx:id="bt_abmelden"
+                layoutX="520.0" layoutY="10.0"
+                text="Abmelden"
+                onAction="#logout" />
+
+        <Label layoutX="200.0" layoutY="40.0"
+               text="Hauptmenü">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+
+        <!-- KUNDEN BLOCK -->
+        <VBox layoutX="60.0" layoutY="120.0" spacing="10">
+
+            <Label text="Kunde">
+                <font>
+                    <Font name="System Bold" size="16.0" />
+                </font>
+            </Label>
+
+            <Button text="Anlegen" />
+            <Button text="Liste" />
+            <Button text="Updaten" />
+        </VBox>
+
+        <!-- RESSOURCE BLOCK -->
+        <VBox layoutX="280.0" layoutY="120.0" spacing="10">
+
+            <Label text="Ressource">
+                <font>
+                    <Font name="System Bold" size="16.0" />
+                </font>
+            </Label>
+
+            <Button text="Anlegen" />
+            <Button text="Liste" />
+            <Button text="Updaten" />
+        </VBox>
+
+        <!-- AUFTRAG BLOCK -->
+        <VBox layoutX="500.0" layoutY="120.0" spacing="10">
+
+            <Label text="Auftrag">
+                <font>
+                    <Font name="System Bold" size="16.0" />
+                </font>
+            </Label>
+
+            <Button text="Anlegen" />
+            <Button text="Liste" />
+            <Button text="Updaten" />
+        </VBox>
+
+        <!-- FOOTER ACTION -->
+        <Button layoutX="260.0" layoutY="370.0"
+                text="Bearbeitung hinzufügen" />
+
+    </children>
+</AnchorPane>
