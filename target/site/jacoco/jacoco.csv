@@ -1,0 +1,5 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+loginverwaltung,de.pm.awk.usecase.impl,GenericDAO,151,47,10,0,36,15,12,3,7,3
+loginverwaltung,de.pm.awk.usecase.impl,Loginverwaltung,47,85,15,13,13,26,14,4,0,4
+loginverwaltung,de.pm,Main,7,0,0,0,3,0,2,0,2,0
+loginverwaltung,de.pm.awk.model,Benutzer,26,30,0,0,8,13,4,7,4,7

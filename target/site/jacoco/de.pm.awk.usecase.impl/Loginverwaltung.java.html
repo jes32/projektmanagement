@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Loginverwaltung.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">loginverwaltung</a> &gt; <a href="index.source.html" class="el_package">de.pm.awk.usecase.impl</a> &gt; <span class="el_source">Loginverwaltung.java</span></div><h1>Loginverwaltung.java</h1><pre class="source lang-java linenums">package de.pm.awk.usecase.impl;
+
+import de.pm.awk.model.Benutzer;
+
+import de.pm.awk.usecase.ILoginverwaltung;
+
+public class Loginverwaltung extends GenericDAO&lt;Benutzer&gt; implements ILoginverwaltung {
+
+    public Loginverwaltung() {
+<span class="fc" id="L10">        super(Benutzer.class);</span>
+<span class="fc" id="L11">    }</span>
+
+    public void registrieren(String username, String passwort) {
+
+        // Eingabeprüfung (erste Validierung)
+<span class="pc bpc" id="L16" title="2 of 4 branches missed.">        if (username == null || username.isBlank()) {</span>
+<span class="nc" id="L17">            throw new IllegalArgumentException(&quot;Username darf nicht leer sein&quot;);</span>
+        }
+
+<span class="pc bpc" id="L20" title="2 of 4 branches missed.">        if (passwort == null || passwort.isBlank()) {</span>
+<span class="nc" id="L21">            throw new IllegalArgumentException(&quot;Passwort darf nicht leer sein&quot;);</span>
+        }
+
+
+<span class="pc bpc" id="L25" title="1 of 2 branches missed.">        if (!username.matches(&quot;[a-zA-Z0-9]+&quot;)) {</span>
+
+<span class="nc" id="L27">            throw new IllegalArgumentException(&quot;Username ungültig (Keine Sonderzeichen)&quot;);</span>
+        }
+
+        // Prüfen, ob der Benutzername schon vergeben ist
+<span class="fc" id="L31">        Benutzer exists = findByUsername(username);</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if (exists != null) {</span>
+<span class="nc" id="L33">            throw new IllegalArgumentException(&quot;Benutzer existiert bereits&quot;);</span>
+        }
+
+        // Benutzer erstellen
+<span class="fc" id="L37">        Benutzer benutzer = new Benutzer();</span>
+<span class="fc" id="L38">        benutzer.setUsername(username);</span>
+<span class="fc" id="L39">        benutzer.setPasswort(passwort);</span>
+
+<span class="fc" id="L41">        super.save(benutzer);</span>
+<span class="fc" id="L42">    }</span>
+
+    public Benutzer login(String username, String passwort) {
+
+   
+    // Eingabeprüfung
+<span class="pc bpc" id="L48" title="2 of 4 branches missed.">    if (username == null || username.isBlank()) {</span>
+<span class="nc" id="L49">        return null;</span>
+    }
+
+<span class="pc bpc" id="L52" title="2 of 4 branches missed.">    if (passwort == null || passwort.isBlank()) {</span>
+<span class="nc" id="L53">        return null;</span>
+    }
+
+    // Benutzer laden
+<span class="fc" id="L57">    Benutzer benutzer = findByUsername(username);</span>
+
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">    if (benutzer == null) {</span>
+<span class="nc" id="L60">        return null;</span>
+    }
+
+    // Sperrprüfung
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">    if (benutzer.isGesperrt()) {</span>
+<span class="nc" id="L65">        return null;</span>
+    }
+
+    // Passwort falsch
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">    if (!benutzer.getPasswort().equals(passwort)) {</span>
+
+<span class="nc" id="L71">        benutzer.setFehlversuche(benutzer.getFehlversuche() + 1);</span>
+
+        // Sperren nach 3 Versuchen
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        if (benutzer.getFehlversuche() &gt;= 3) {</span>
+<span class="nc" id="L75">            benutzer.setGesperrt(true);</span>
+        }
+
+<span class="nc" id="L78">        update(benutzer);</span>
+<span class="nc" id="L79">        return null;</span>
+    }
+
+    // Login erfolgreich → reset
+<span class="fc" id="L83">    benutzer.setFehlversuche(0);</span>
+<span class="fc" id="L84">    update(benutzer);</span>
+
+<span class="fc" id="L86">    return benutzer;</span>
+
+    }
+
+    public Benutzer findByUsername(String username) {
+
+        try {
+<span class="fc" id="L93">            return em.createQuery(</span>
+                    &quot;SELECT b FROM Benutzer b WHERE b.username = :username&quot;,
+                    Benutzer.class)
+<span class="fc" id="L96">                    .setParameter(&quot;username&quot;, username)</span>
+<span class="fc" id="L97">                    .getSingleResult();</span>
+
+<span class="fc" id="L99">        } catch (Exception e) {</span>
+<span class="fc" id="L100">            return null;</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GenericDAO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">loginverwaltung</a> &gt; <a href="index.source.html" class="el_package">de.pm.awk.usecase.impl</a> &gt; <span class="el_source">GenericDAO.java</span></div><h1>GenericDAO.java</h1><pre class="source lang-java linenums">package de.pm.awk.usecase.impl;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import jakarta.persistence.Persistence;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaQuery;
+
+public abstract class GenericDAO&lt;T&gt; {
+
+<span class="pc" id="L17">	private final String UNIT_NAME = &quot;userstory&quot;;</span>
+	
+<span class="pc" id="L19">	EntityManagerFactory emf =  Persistence.createEntityManagerFactory(UNIT_NAME);</span>
+<span class="pc" id="L20">	EntityManager em = emf.createEntityManager();</span>
+<span class="pc" id="L21">	EntityTransaction tr = em.getTransaction();</span>
+	
+	private Class&lt;T&gt; entityClass;
+	
+<span class="nc" id="L25">	public GenericDAO(){}</span>
+	
+<span class="fc" id="L27">	public GenericDAO(Class&lt;T&gt; entityClass){</span>
+<span class="fc" id="L28">		this.entityClass = entityClass;</span>
+	
+<span class="fc" id="L30">	}</span>
+	
+	public void save(T entity){
+<span class="fc" id="L33">		tr.begin();</span>
+<span class="fc" id="L34">		this.em.persist(entity);</span>
+<span class="fc" id="L35">		tr.commit();</span>
+<span class="fc" id="L36">	}</span>
+	
+	public T update(T entity){
+		T ret;
+<span class="fc" id="L40">		tr.begin();</span>
+<span class="fc" id="L41">		ret= em.merge(entity);</span>
+<span class="fc" id="L42">		tr.commit();</span>
+<span class="fc" id="L43">		return ret;</span>
+	}
+	
+	protected boolean delete(Object id, Class&lt;T&gt; classe){
+<span class="nc" id="L47">		T entityToBeRemoved = em.getReference(classe, id);</span>
+		try {
+<span class="nc" id="L49">			tr.begin();</span>
+<span class="nc" id="L50">			em.remove(entityToBeRemoved);</span>
+<span class="nc" id="L51">			tr.commit();</span>
+<span class="nc" id="L52">			return true;</span>
+<span class="nc" id="L53">		} catch (Exception e){</span>
+<span class="nc" id="L54">			System.out.println(&quot;Fehler beim Loeschen der Id: &quot;+id.toString());</span>
+<span class="nc" id="L55">			return false;</span>
+		}
+	}
+	
+	public T find(int entityId) {
+<span class="nc" id="L60">		return em.find(entityClass, entityId);</span>
+	}
+	
+	@SuppressWarnings({&quot;unchecked&quot;,&quot;rawtypes&quot;})
+	public List&lt;T&gt; findAll(){
+<span class="nc" id="L65">		CriteriaQuery cq = em.getCriteriaBuilder().createQuery();</span>
+<span class="nc" id="L66">		cq.select(cq.from(entityClass));</span>
+<span class="nc" id="L67">		return em.createQuery(cq).getResultList();</span>
+	}
+	
+	@SuppressWarnings(&quot;unchecked&quot;)
+	protected T findOneResult (String namedQuery, Map&lt;String, Object&gt; parameters){
+<span class="nc" id="L72">		T result = null;</span>
+		try {
+<span class="nc" id="L74">			Query query = em.createNamedQuery(namedQuery);</span>
+<span class="nc bnc" id="L75" title="All 4 branches missed.">			if (parameters != null &amp;&amp; !parameters.isEmpty()){</span>
+<span class="nc" id="L76">				populateQueryParameters(query, parameters);</span>
+			}
+			
+<span class="nc" id="L79">			result = (T) query.getSingleResult();</span>
+					
+<span class="nc" id="L81">		} catch (Exception e){</span>
+<span class="nc" id="L82">			System.out.println(&quot;Fehler bei der Query: &quot;+e.getMessage());</span>
+<span class="nc" id="L83">			e.printStackTrace();</span>
+<span class="nc" id="L84">		}</span>
+		
+<span class="nc" id="L86">		return result;</span>
+	}
+	
+	@SuppressWarnings(&quot;unchecked&quot;)
+	protected List&lt;T&gt; findListResult(String namedQuery, Map&lt;String, Object&gt; parameters){
+<span class="nc" id="L91">		List&lt;T&gt; result = null;</span>
+		try{
+<span class="nc" id="L93">			Query query = em.createNamedQuery(namedQuery);</span>
+<span class="nc bnc" id="L94" title="All 4 branches missed.">			if (parameters != null &amp;&amp; !parameters.isEmpty()){</span>
+<span class="nc" id="L95">				populateQueryParameters(query,parameters);</span>
+			}
+<span class="nc" id="L97">			result = (List&lt;T&gt;) query.getResultList();</span>
+<span class="nc" id="L98">		} catch (Exception e){</span>
+<span class="nc" id="L99">			System.out.println(&quot;Fehler bei der Query: &quot;+e.getMessage());</span>
+<span class="nc" id="L100">		}</span>
+<span class="nc" id="L101">		return result;</span>
+	}
+	
+	
+	private void populateQueryParameters(Query query, Map&lt;String, Object&gt; parameters){
+<span class="nc bnc" id="L106" title="All 2 branches missed.">		for (Entry&lt;String, Object&gt; entry : parameters.entrySet()){</span>
+<span class="nc" id="L107">			query.setParameter(entry.getKey(),  entry.getValue());</span>
+<span class="nc" id="L108">		}</span>
+<span class="nc" id="L109">	}</span>
+	
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

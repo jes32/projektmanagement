@@ -1,0 +1,5 @@
+de\pm\awk\usecase\impl\GenericDAO.class
+de\pm\awk\usecase\ILoginverwaltung.class
+de\pm\awk\usecase\impl\Loginverwaltung.class
+de\pm\Main.class
+de\pm\awk\model\Benutzer.class
